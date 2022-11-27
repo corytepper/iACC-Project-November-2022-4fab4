@@ -10,21 +10,8 @@ protocol ItemsService {
 
 class ListViewController: UITableViewController {
     var items = [ItemViewModel]()
-    
     var service: ItemsService?
-    
-    
-    var retryCount = 0
-    var maxRetryCount = 0
-    var shouldRetry = false
-    
-    var longDateStyle = false
-    
-    var fromReceivedTransfersScreen = false
-    var fromSentTransfersScreen = false
-    var fromCardsScreen = false
-    var fromFriendsScreen = false
-    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -48,46 +35,16 @@ class ListViewController: UITableViewController {
     private func handleAPIResult(_ result: Result<[ItemViewModel], Error>) {
         switch result {
         case let .success(items):
-            self.retryCount = 0
             self.items = items
             self.refreshControl?.endRefreshing()
             self.tableView.reloadData()
             
         case let .failure(error):
-            if shouldRetry && retryCount < maxRetryCount {
-                retryCount += 1
-                
-                refresh()
-                return
-            }
-            
-            retryCount = 0
-            
-            if fromFriendsScreen && User.shared?.isPremium == true {
-                (UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate).cache.loadFriends { [weak self] result in
-                    DispatchQueue.mainAsyncIfNeeded {
-                        switch result {
-                        case let .success(items):
-                            self?.items = items.map { item in
-                                ItemViewModel(friend: item, selection: { [weak self] in
-                                        self?.select(friend: item)
-                                })
-                            }
-                            
-                            self?.tableView.reloadData()
-                            
-                        case let .failure(error):
-                            self?.show(error: error)
-                        }
-                        self?.refreshControl?.endRefreshing()
-                    }
-                }
-            } else {
-                self.show(error: error)
-                self.refreshControl?.endRefreshing()
-            }
+            self.show(error: error)
+            self.refreshControl?.endRefreshing()
         }
     }
+
     
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -131,7 +88,6 @@ extension UIViewController {
         show(vc, sender: self)    }
     
     
-    
     @objc func addCard() {
         show(AddCardViewController(), sender: self)
     }
@@ -161,7 +117,6 @@ struct ItemViewModel {
     let select: () -> Void
 }
 
-
 extension ItemViewModel {
     init(friend: Friend, selection: @escaping () -> Void) {
         title = friend.name
@@ -170,13 +125,11 @@ extension ItemViewModel {
     }
 }
 
-
 extension ItemViewModel {
     init(card: Card, selection: @escaping () -> Void) {
         title = card.number
         subTitle = card.holder
         select = selection
-
     }
 }
 
