@@ -78,12 +78,24 @@ class MainTabBarController: UITabBarController {
 	private func makeSentTransfersList() -> ListViewController {
 		let vc = ListViewController()
 		vc.fromSentTransfersScreen = true
+        vc.shouldRetry = true
+        vc.maxRetryCount = 1
+        vc.longDateStyle = true
+        
+        vc.navigationItem.title = "Sent"
+        vc.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Send", style: .done, target: vc, action: #selector(sendMoney))
 		return vc
 	}
 	
 	private func makeReceivedTransfersList() -> ListViewController {
 		let vc = ListViewController()
 		vc.fromReceivedTransfersScreen = true
+        vc.shouldRetry = true
+        vc.maxRetryCount = 1
+        vc.longDateStyle = false
+        
+        vc.navigationItem.title = "Received"
+        vc.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Request", style: .done, target: vc, action: #selector(requestMoney))
 		return vc
 	}
 	
@@ -93,7 +105,6 @@ class MainTabBarController: UITabBarController {
         vc.shouldRetry = false
         
         vc.title = "Cards"
-        
         vc.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: vc, action: #selector(addCard))
         
         vc.service = CardAPIItemsServiceAdapter(

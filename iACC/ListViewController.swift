@@ -30,23 +30,6 @@ class ListViewController: UITableViewController {
         
         refreshControl = UIRefreshControl()
         refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
-            
-       if fromSentTransfersScreen {
-            shouldRetry = true
-            maxRetryCount = 1
-            longDateStyle = true
-            
-            navigationItem.title = "Sent"
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Send", style: .done, target: self, action: #selector(sendMoney))
-            
-        } else if fromReceivedTransfersScreen {
-            shouldRetry = true
-            maxRetryCount = 1
-            longDateStyle = false
-            
-            navigationItem.title = "Received"
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Request", style: .done, target: self, action: #selector(requestMoney))
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -190,9 +173,6 @@ extension UIViewController {
     @objc func requestMoney() {
         show(RequestMoneyViewController(), sender: self)
     }
-    
-    
-    
     
     func show(error: Error) {
         let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
